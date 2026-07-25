@@ -1,0 +1,1765 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homeless-Serving Nonprofits by State</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #eeeeee;
+        --navy: #2d5143;
+        --navy-light: #2d5143;
+        --gold: #ae3a00;
+        --gold-light: #e9c57b;
+        --ink: #20242a;
+        --muted: #5b6472;
+        --card: #ffffff;
+        --row-alt: #f6f6f4;
+        --border: #dcdee2;
+        --radius: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        font-family: "Poppins", sans-serif;
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      header.top {
+        background: linear-gradient(
+          135deg,
+          var(--navy) 0%,
+          var(--navy-light) 100%
+        );
+        color: #fff;
+        padding: 36px 20px 30px;
+        text-align: center;
+      }
+
+      header.top h1 {
+        margin: 0 0 8px;
+        font-weight: 600;
+        font-size: clamp(1.4rem, 3vw, 2.1rem);
+        letter-spacing: -0.01em;
+      }
+
+      header.top p {
+        margin: 0;
+        font-weight: 300;
+        font-size: 0.95rem;
+        color: #d7deea;
+        max-width: 640px;
+        margin-inline: auto;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--gold-light);
+        margin-bottom: 10px;
+      }
+
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 28px 20px 60px;
+      }
+
+      .picker-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 20px 22px;
+        box-shadow: 0 2px 10px rgba(27, 51, 88, 0.08);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .picker-card label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--navy);
+        white-space: nowrap;
+      }
+
+      select#stateSelect {
+        flex: 1;
+        min-width: 200px;
+        font-family: "Poppins", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--ink);
+        padding: 12px 40px 12px 14px;
+        border-radius: 10px;
+        border: 1.5px solid var(--border);
+        background: #fff
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%231B3358" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>')
+          no-repeat right 14px center / 16px;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+
+      select#stateSelect:focus {
+        outline: none;
+        border-color: var(--navy);
+        box-shadow: 0 0 0 3px rgba(27, 51, 88, 0.15);
+      }
+
+      .state-count {
+        font-size: 0.78rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      #emptyState {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 60px 24px;
+        text-align: center;
+        color: var(--muted);
+        box-shadow: 0 2px 10px rgba(27, 51, 88, 0.06);
+      }
+
+      #emptyState .icon {
+        font-size: 2.2rem;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      #resultsWrap {
+        display: none;
+      }
+
+      .state-heading {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin: 4px 0 16px;
+        flex-wrap: wrap;
+      }
+
+      .state-heading h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: var(--navy);
+      }
+
+      .state-heading span {
+        font-size: 0.8rem;
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      .table-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(27, 51, 88, 0.08);
+      }
+
+      table.np-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+
+      table.np-table thead th {
+        background: var(--navy);
+        color: #fff;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 14px 18px;
+      }
+
+      table.np-table tbody td {
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+        color: var(--ink);
+      }
+
+      table.np-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+      table.np-table tbody tr:nth-child(even) {
+        background: var(--row-alt);
+      }
+
+      table.np-table td.name-cell {
+        width: 20%;
+        font-weight: 600;
+      }
+      table.np-table td.focus-cell {
+        width: 16%;
+      }
+      table.np-table td.mission-cell {
+        width: 48%;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      table.np-table td.donated-cell {
+        width: 16%;
+      }
+
+      a.org-link {
+        color: var(--navy);
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 1.5px solid var(--gold);
+        padding-bottom: 1px;
+        transition: color 0.15s ease;
+      }
+      a.org-link:hover {
+        color: var(--gold);
+      }
+
+      .focus-pill {
+        display: inline-block;
+        background: #eaf0fa;
+        color: var(--navy);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+
+      .donated-badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        padding: 4px 12px;
+        border-radius: 20px;
+        background: #f5e4e4;
+        color: #9b3b3b;
+      }
+
+      .donated-badge.is-yes {
+        background: #e1f3e5;
+        color: #2e7d42;
+      }
+
+      .cell-label {
+        display: none;
+      }
+
+      footer.note {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 20px 40px;
+        font-size: 0.75rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      /* ---------- Tablet ---------- */
+      @media (max-width: 1024px) {
+        main {
+          padding: 24px 16px 50px;
+        }
+        table.np-table td.mission-cell {
+          width: 42%;
+        }
+        table.np-table thead th,
+        table.np-table tbody td {
+          padding: 12px 14px;
+          font-size: 0.86rem;
+        }
+      }
+
+      /* ---------- Mobile: stacked cards ---------- */
+      @media (max-width: 640px) {
+        header.top {
+          padding: 28px 16px 24px;
+        }
+        .picker-card {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .picker-card label {
+          margin-bottom: -6px;
+        }
+        .state-count {
+          text-align: right;
+        }
+
+        table.np-table thead {
+          display: none;
+        }
+        table.np-table,
+        table.np-table tbody,
+        table.np-table tr,
+        table.np-table td {
+          display: block;
+          width: 100% !important;
+        }
+        table.np-table tbody tr {
+          border-bottom: 8px solid var(--bg);
+          padding: 14px 16px 16px;
+        }
+        table.np-table tbody tr:nth-child(even) {
+          background: var(--card);
+        }
+        table.np-table tbody td {
+          border-bottom: none;
+          padding: 8px 0;
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          align-items: flex-start;
+        }
+        table.np-table td.mission-cell {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .cell-label {
+          display: block;
+          font-size: 0.68rem;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          font-weight: 700;
+          color: var(--gold);
+          flex-shrink: 0;
+          width: 90px;
+        }
+        table.np-table td.mission-cell .cell-label {
+          width: auto;
+          margin-bottom: 4px;
+        }
+        table.np-table td.name-cell,
+        table.np-table td.focus-cell,
+        table.np-table td.donated-cell {
+          text-align: right;
+        }
+        table.np-table td.mission-cell {
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ---------- HEADER 
+    <header class="top">
+      <span class="eyebrow">National Directory</span>
+      <h1>Homeless-Serving Nonprofits, State by State</h1>
+      <p>
+        Select a state to see four leading nonprofit organizations working to
+        end homelessness there.
+      </p>
+    </header>
+---------- -->
+    <main>
+      <div class="picker-card">
+        <label for="stateSelect">Choose a state</label>
+        <select id="stateSelect">
+          <option value="">— Select a state —</option>
+        </select>
+        <span class="state-count" id="stateCount"></span>
+      </div>
+
+      <div id="emptyState">
+        <span class="icon">📍</span>
+        Pick a state from the dropdown above to view its top homeless-services
+        nonprofits.
+      </div>
+
+      <div id="resultsWrap">
+        <div class="state-heading">
+          <h2 id="stateName"></h2>
+          <span
+            >If we recieve purchase orders from your state, these organizations
+            may be eligible for support.</span
+          >
+        </div>
+        <div class="table-card">
+          <table class="np-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Focus Area</th>
+                <th>Mission Statement</th>
+                <th>Donated</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <footer class="note">
+      Organization details reflect publicly available information as of 2026 and
+      are provided for informational purposes. Nonprofit programs, leadership,
+      and web addresses change over time — please confirm current details
+      directly on each organization's website before relying on them, especially
+      before donating.
+    </footer>
+
+    <script>
+      /* =========================================================
+   DATA: 50 states x top 4 homeless-services nonprofits
+   ========================================================= */
+      const DATA = {
+        Alabama: [
+          {
+            name: "Firehouse Shelter",
+            url: "https://www.firehouseshelter.com",
+            focus: "Men's Shelter",
+            mission:
+              "Offers overnight shelter, meals, and case management for homeless men in Birmingham working toward permanent housing.",
+            donated: "NO",
+          },
+          {
+            name: "YWCA Central Alabama",
+            url: "https://www.ywcabham.org",
+            focus: "Women & Families",
+            mission:
+              "Provides emergency shelter and transitional housing for women and children escaping homelessness and domestic abuse.",
+            donated: "NO",
+          },
+          {
+            name: "The Salvation Army of Alabama",
+            url: "https://www.salvationarmyalm.org",
+            focus: "Shelter & Basic Needs",
+            mission:
+              "Delivers shelter, meals, and rehabilitation programs to individuals and families facing homelessness across the state.",
+            donated: "NO",
+          },
+        ],
+        Alaska: [
+          {
+            name: "Bean's Cafe",
+            url: "https://www.beanscafe.org",
+            focus: "Meals & Referrals",
+            mission:
+              "Serves daily meals in Anchorage and connects guests experiencing homelessness to housing, job, and education resources.",
+            donated: "NO",
+          },
+          {
+            name: "Brother Francis Shelter",
+            url: "https://www.cssalaska.org",
+            focus: "Emergency Shelter",
+            mission:
+              "Provides overnight emergency shelter and case management for adults experiencing homelessness in Anchorage.",
+            donated: "NO",
+          },
+        ],
+        Arizona: [
+          {
+            name: "UMOM New Day Centers",
+            url: "https://www.umom.org",
+            focus: "Family Homelessness",
+            mission:
+              "Provides shelter, childcare, and workforce programs for homeless families and youth throughout metro Phoenix.",
+            donated: "NO",
+          },
+          {
+            name: "Phoenix Rescue Mission",
+            url: "https://www.phoenixrescuemission.org",
+            focus: "Recovery & Shelter",
+            mission:
+              "Combines emergency shelter, meals, and addiction recovery programs to help people break the cycle of homelessness.",
+            donated: "NO",
+          },
+        ],
+        Arkansas: [
+          {
+            name: "Our House",
+            url: "https://www.ourhouseshelter.org",
+            focus: "Transitional Housing",
+            mission:
+              "Combines shelter with employment and childcare programs to help working families exit homelessness in Little Rock.",
+            donated: "NO",
+          },
+
+          {
+            name: "The Salvation Army of Central Arkansas",
+            url: "https://www.salvationarmyarkansas.org",
+            focus: "Shelter & Basic Needs",
+            mission:
+              "Provides emergency shelter, meals, and rehabilitation services throughout central Arkansas.",
+            donated: "NO",
+          },
+          {
+            name: "Immerse Arkansas",
+            url: "https://www.immersearkansas.org",
+            focus: "Youth Homelessness",
+            mission:
+              "Supports young people aging out of foster care with housing, mentoring, and life-skills programs.",
+            donated: "NO",
+          },
+        ],
+        California: [
+          {
+            name: "Union Rescue Mission",
+            url: "https://www.urm.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides emergency shelter, recovery programs, and job training on Skid Row in downtown Los Angeles.",
+            donated: "NO",
+          },
+          {
+            name: "LA Family Housing",
+            url: "https://www.lafh.org",
+            focus: "Permanent Housing",
+            mission:
+              "Moves families and individuals from homelessness into permanent supportive housing across Los Angeles County.",
+            donated: "NO",
+          },
+          {
+            name: "Bay Area Rescue Mission",
+            url: "https://www.bayarearescue.org",
+            focus: "Shelter & Meals",
+            mission:
+              "Offers shelter, meals, and recovery programs for people experiencing homelessness in Richmond and the East Bay.",
+            donated: "NO",
+          },
+          {
+            name: "St. Vincent de Paul Society of San Francisco",
+            url: "https://www.svdp-sf.org",
+            focus: "Basic Needs",
+            mission:
+              "Provides free dining rooms, shelter referrals, and clothing to San Francisco's homeless community.",
+            donated: "NO",
+          },
+        ],
+        Colorado: [
+          {
+            name: "Denver Rescue Mission",
+            url: "https://www.denverrescuemission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and addiction recovery programs to men, women, and families across the Front Range.",
+            donated: "NO",
+          },
+          {
+            name: "Colorado Coalition for the Homeless",
+            url: "https://www.coloradocoalition.org",
+            focus: "Housing & Healthcare",
+            mission:
+              "Combines healthcare, housing, and job training to help Coloradans exit and stay out of homelessness.",
+            donated: "NO",
+          },
+          {
+            name: "Urban Peak",
+            url: "https://www.urbanpeak.org",
+            focus: "Youth Homelessness",
+            mission:
+              "Provides shelter, education, and job training exclusively for homeless youth in Denver and Colorado Springs.",
+            donated: "NO",
+          },
+          {
+            name: "Mile High Ministries",
+            url: "https://www.milehighministries.org",
+            focus: "Community Housing",
+            mission:
+              "Builds community-based housing and support programs for people experiencing homelessness in Denver.",
+            donated: "NO",
+          },
+        ],
+        Connecticut: [
+          {
+            name: "Columbus House",
+            url: "https://www.columbushouse.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides emergency shelter and permanent supportive housing across the greater New Haven area.",
+            donated: "NO",
+          },
+          {
+            name: "Journey Home",
+            url: "https://www.journeyhomect.org",
+            focus: "Coordination",
+            mission:
+              "Leads the regional effort to coordinate shelters, housing, and services aimed at ending homelessness in Hartford.",
+            donated: "NO",
+          },
+          {
+            name: "New Reach",
+            url: "https://www.newreach.org",
+            focus: "Family Housing",
+            mission:
+              "Provides shelter and housing programs for homeless women, children, and families in the New Haven area.",
+            donated: "NO",
+          },
+          {
+            name: "Connecticut Coalition to End Homelessness",
+            url: "https://www.cceh.org",
+            focus: "Advocacy & Data",
+            mission:
+              "Coordinates statewide data, funding, and policy efforts to prevent and end homelessness in Connecticut.",
+            donated: "NO",
+          },
+        ],
+        Delaware: [
+          {
+            name: "Sunday Breakfast Mission",
+            url: "https://www.sundaybreakfastmission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for homeless men in Wilmington.",
+            donated: "NO",
+          },
+          {
+            name: "Friendship House",
+            url: "https://www.friendshiphousede.org",
+            focus: "Housing & Meals",
+            mission:
+              "Operates shelters, meal programs, and permanent housing for Delawareans experiencing homelessness.",
+            donated: "NO",
+          },
+          {
+            name: "Catholic Charities, Diocese of Wilmington",
+            url: "https://www.cdow.org",
+            focus: "Family Services",
+            mission:
+              "Provides emergency shelter and housing assistance for families experiencing homelessness across Delaware.",
+            donated: "NO",
+          },
+        ],
+        "District of Columbia": [
+          {
+            name: "Miriam's Kitchen",
+            url: "https://www.miriamskitchen.org",
+            focus: "Meals & Housing",
+            mission:
+              "Provides meals, housing, and support services for people experiencing homelessness in Washington, D.C.",
+            donated: "NO",
+          },
+          {
+            name: "DC Central Kitchen",
+            url: "https://www.dccentralkitchen.org",
+            focus: "Meals & Job Training",
+            mission:
+              "Provides meals and culinary job training programs for people experiencing homelessness in Washington, D.C.",
+            donated: "NO",
+          },
+        ],
+        Florida: [
+          {
+            name: "Tacoma Rescue Mission",
+            url: "https://www.trm.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Offers emergency shelter, meals, and addiction recovery programs for people experiencing homelessness in Jacksonville.",
+            donated: "NO",
+          },
+          {
+            name: "Homeless Services Network of Central Florida",
+            url: "https://www.hsncfl.org",
+            focus: "Coordination",
+            mission:
+              "Coordinates shelter, housing, and prevention services for the greater Orlando region.",
+            donated: "NO",
+          },
+          {
+            name: "Miami-Dade County Homeless Trust",
+            url: "https://www.homelesstrust.org",
+            focus: "Coordination & Funding",
+            mission:
+              "Plans and funds the countywide network of shelter and housing services across Miami-Dade County.",
+            donated: "NO",
+          },
+        ],
+        Georgia: [
+          {
+            name: "Atlanta Mission",
+            url: "https://www.atlantamission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs across multiple campuses throughout metro Atlanta.",
+            donated: "NO",
+          },
+          {
+            name: "Gateway Center",
+            url: "https://www.gatewayctr.org",
+            focus: "Day Services & Housing",
+            mission:
+              "Serves as a single point of entry connecting homeless individuals in Atlanta to shelter and housing options.",
+            donated: "NO",
+          },
+          {
+            name: "Covenant House Georgia",
+            url: "https://www.covenanthousega.org",
+            focus: "Youth Homelessness",
+            mission:
+              "Provides shelter and support services for homeless and trafficked youth in the Atlanta area.",
+            donated: "NO",
+          },
+        ],
+        Hawaii: [
+          {
+            name: "Institute for Human Services",
+            url: "https://www.ihshawaii.org",
+            focus: "Shelter & Case Management",
+            mission:
+              "Operates Hawaii's largest emergency shelters and case management programs for homeless individuals on Oahu.",
+            donated: "NO",
+          },
+          {
+            name: "River of Life Mission",
+            url: "https://www.riveroflifemission.org",
+            focus: "Shelter & Meals",
+            mission:
+              "Provides shelter, meals, and outreach services to Honolulu's homeless community.",
+            donated: "NO",
+          },
+          {
+            name: "Waikiki Health",
+            url: "https://www.waikikihealth.org",
+            focus: "Healthcare & Outreach",
+            mission:
+              "Provides medical care and street outreach services to people experiencing homelessness in Honolulu.",
+            donated: "NO",
+          },
+        ],
+        Idaho: [
+          {
+            name: "Interfaith Sanctuary",
+            url: "https://www.interfaithsanctuary.org",
+            focus: "Emergency Shelter",
+            mission:
+              "Provides shelter, meals, and case management for men, women, and families experiencing homelessness in Boise.",
+            donated: "NO",
+          },
+          {
+            name: "CATCH",
+            url: "https://www.catchidaho.org",
+            focus: "Family Housing",
+            mission:
+              "Rapidly rehouses homeless families in the Boise area with wraparound case management support.",
+            donated: "NO",
+          },
+          {
+            name: "Boise Rescue Mission",
+            url: "https://www.boiserm.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Offers shelter, meals, and recovery programs for men, women, and children in the Boise area.",
+            donated: "NO",
+          },
+        ],
+        Illinois: [
+          {
+            name: "Pacific Garden Mission",
+            url: "https://www.pgm.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for people experiencing homelessness in Chicago.",
+            donated: "NO",
+          },
+          {
+            name: "Deborah's Place",
+            url: "https://www.deborahsplace.org",
+            focus: "Women's Housing",
+            mission:
+              "Provides supportive housing exclusively for women experiencing homelessness in Chicago.",
+            donated: "NO",
+          },
+
+          {
+            name: "Chicago Coalition for the Homeless",
+            url: "https://www.chicagohomeless.org",
+            focus: "Advocacy",
+            mission:
+              "Advocates for policy change and organizes people with lived experience of homelessness across Chicago.",
+            donated: "NO",
+          },
+        ],
+        Indiana: [
+          {
+            name: "Wheeler Mission",
+            url: "https://www.wheelermission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children in Indianapolis.",
+            donated: "NO",
+          },
+
+          {
+            name: "Coburn Place",
+            url: "https://www.coburnplace.org",
+            focus: "Domestic Violence Housing",
+            mission:
+              "Provides safe transitional housing for survivors of domestic violence experiencing homelessness.",
+            donated: "NO",
+          },
+        ],
+        Iowa: [
+          {
+            name: "Central Iowa Shelter & Services",
+            url: "https://www.centraliowashelter.org",
+            focus: "Emergency Shelter",
+            mission:
+              "Provides shelter, meals, and case management for adults experiencing homelessness in Des Moines.",
+            donated: "NO",
+          },
+          {
+            name: "Hope Ministries",
+            url: "https://www.hopeministries.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Offers shelter, meals, and recovery programs for people experiencing homelessness across central Iowa.",
+            donated: "NO",
+          },
+          {
+            name: "Shelter House",
+            url: "https://www.shelterhouseiowa.org",
+            focus: "Housing & Outreach",
+            mission:
+              "Provides emergency shelter and outreach services to individuals experiencing homelessness in Johnson County.",
+            donated: "NO",
+          },
+          {
+            name: "Waypoint",
+            url: "https://www.waypointservices.org",
+            focus: "Family & DV Services",
+            mission:
+              "Provides shelter and support services for homeless women and families in the Cedar Rapids area.",
+            donated: "NO",
+          },
+        ],
+        Kansas: [
+          {
+            name: "Topeka Rescue Mission",
+            url: "https://www.trmonline.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Topeka.",
+            donated: "NO",
+          },
+          {
+            name: "Union Rescue Mission",
+            url: "https://www.urmwichita.org",
+            focus: "Shelter & Meals",
+            mission:
+              "Provides shelter and meal programs for people experiencing homelessness in Wichita.",
+            donated: "NO",
+          },
+        ],
+        Kentucky: [
+          {
+            name: "Wayside Christian Mission",
+            url: "https://www.waysidechristianmission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Louisville.",
+            donated: "NO",
+          },
+          {
+            name: "St. Vincent de Paul Louisville",
+            url: "https://www.svdplou.org",
+            focus: "Basic Needs & Shelter",
+            mission:
+              "Provides shelter, meals, and direct assistance to individuals experiencing poverty and homelessness.",
+            donated: "NO",
+          },
+          {
+            name: "Volunteers of America Mid-States",
+            url: "https://www.voamid.org",
+            focus: "Housing & Recovery",
+            mission:
+              "Provides housing, recovery, and reentry services for people experiencing homelessness across Kentucky.",
+            donated: "NO",
+          },
+          {
+            name: "Coalition for the Homeless (Louisville)",
+            url: "https://www.louhomeless.org",
+            focus: "Coordination",
+            mission:
+              "Coordinates shelter, outreach, and data collection to address homelessness across greater Louisville.",
+            donated: "NO",
+          },
+        ],
+        Louisiana: [
+          {
+            name: "Ozanam Inn",
+            url: "https://www.ozanaminn.org",
+            focus: "Shelter & Meals",
+            mission:
+              "Provides shelter and meals for homeless men in New Orleans.",
+            donated: "NO",
+          },
+          {
+            name: "New Orleans Mission",
+            url: "https://www.neworleansmission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men experiencing homelessness in New Orleans.",
+            donated: "NO",
+          },
+        ],
+        Maine: [
+          {
+            name: "Preble Street",
+            url: "https://www.preblestreet.org",
+            focus: "Shelter & Meals",
+            mission:
+              "Provides shelter, meals, and advocacy for people experiencing homelessness in the Portland area.",
+            donated: "NO",
+          },
+          {
+            name: "Tedford Housing",
+            url: "https://www.tedfordhousing.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides emergency shelter and permanent housing for people experiencing homelessness in Brunswick.",
+            donated: "NO",
+          },
+        ],
+        Maryland: [
+          {
+            name: "Health Care for the Homeless",
+            url: "https://www.hchmd.org",
+            focus: "Healthcare",
+            mission:
+              "Provides medical, dental, and mental health care to people experiencing homelessness in Baltimore.",
+            donated: "NO",
+          },
+          {
+            name: "Montgomery County Coalition for the Homeless",
+            url: "https://mcch.net",
+            focus: "Emergency Shelter, Pernanent Housing, & Coalition housing",
+            mission:
+              "Creates pathways out of homelessness, helping people live with dignity and heal from trauma in Montgomery County.",
+            donated: "NO",
+          },
+        ],
+        Massachusetts: [
+          {
+            name: "Pine Street Inn",
+            url: "https://www.pinestreetinn.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides shelter, street outreach, and permanent supportive housing across the city of Boston.",
+            donated: "NO",
+          },
+          {
+            name: "St. Francis House",
+            url: "https://www.stfrancishouse.org",
+            focus: "Day Services",
+            mission:
+              "Provides day services, meals, and job training for adults experiencing homelessness in downtown Boston.",
+            donated: "NO",
+          },
+          {
+            name: "Rosie's Place",
+            url: "https://www.rosiesplace.org",
+            focus: "Women's Services",
+            mission:
+              "Provides shelter, meals, and advocacy exclusively for poor and homeless women in Boston.",
+            donated: "NO",
+          },
+          {
+            name: "Boston Health Care for the Homeless Program",
+            url: "https://www.bhchp.org",
+            focus: "Healthcare",
+            mission:
+              "Provides medical and behavioral healthcare to people experiencing homelessness across greater Boston.",
+            donated: "NO",
+          },
+        ],
+        Michigan: [
+          {
+            name: "Detroit Rescue Mission Ministries",
+            url: "https://www.drmm.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and families experiencing homelessness in Detroit.",
+            donated: "NO",
+          },
+
+          {
+            name: "Cass Community Social Services",
+            url: "https://www.casscommunity.org",
+            focus: "Shelter & Job Creation",
+            mission:
+              "Provides shelter, meals, and job programs for Detroit residents experiencing homelessness.",
+            donated: "NO",
+          },
+          {
+            name: "Coalition On Temporary Shelter (COTS)",
+            url: "https://www.cotsdetroit.org",
+            focus: "Family Housing",
+            mission:
+              "Provides shelter and housing stability programs for families experiencing homelessness in Detroit.",
+            donated: "NO",
+          },
+        ],
+        Minnesota: [
+          {
+            name: "Simpson Housing Services",
+            url: "https://www.simpsonhousing.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides emergency shelter and permanent supportive housing throughout Minneapolis.",
+            donated: "NO",
+          },
+          {
+            name: "People Serving People",
+            url: "https://www.peopleservingpeople.org",
+            focus: "Family Shelter",
+            mission:
+              "Provides shelter and support services for homeless families with children in Minneapolis.",
+            donated: "NO",
+          },
+          {
+            name: "Catholic Charities Twin Cities",
+            url: "https://www.cctwincities.org",
+            focus: "Shelter & Services",
+            mission:
+              "Provides shelter, housing, and support services across the Minneapolis-St. Paul area.",
+            donated: "NO",
+          },
+        ],
+        Mississippi: [
+          {
+            name: "Stewpot Community Services",
+            url: "https://www.stewpot.org",
+            focus: "Meals & Shelter",
+            mission:
+              "Provides meals, shelter, and clothing to people experiencing homelessness in Jackson.",
+            donated: "NO",
+          },
+
+          {
+            name: "The Salvation Army of Mississippi",
+            url: "https://www.salvationarmyalm.org",
+            focus: "Shelter & Basic Needs",
+            mission:
+              "Provides shelter, meals, and rehabilitation programs for people facing homelessness across the state.",
+            donated: "NO",
+          },
+        ],
+        Missouri: [
+          {
+            name: "St. Patrick Center",
+            url: "https://www.stpatrickcenter.org",
+            focus: "Housing & Recovery",
+            mission:
+              "Provides housing, mental health, and job training services for people experiencing homelessness in St. Louis.",
+            donated: "NO",
+          },
+
+          {
+            name: "reStart Inc.",
+            url: "https://www.restartinc.org",
+            focus: "Family Housing",
+            mission:
+              "Provides shelter and housing programs for homeless families and youth in the Kansas City area.",
+            donated: "NO",
+          },
+        ],
+        Montana: [
+          {
+            name: "The Poverello Center",
+            url: "https://www.thepoverellocenter.org",
+            focus: "Shelter & Meals",
+            mission:
+              "Provides shelter, meals, and outreach services to people experiencing homelessness in Missoula.",
+            donated: "NO",
+          },
+          {
+            name: "Human Resource Development Council (HRDC)",
+            url: "https://www.thehrdc.org",
+            focus: "Housing & Services",
+            mission:
+              "Provides housing assistance, shelter, and support services throughout Gallatin County.",
+            donated: "NO",
+          },
+          {
+            name: "Montana Rescue Mission",
+            url: "https://www.montanarescuemission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for people experiencing homelessness in Great Falls.",
+            donated: "NO",
+          },
+        ],
+        Nebraska: [
+          {
+            name: "Open Door Mission",
+            url: "https://www.opendoormission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Omaha.",
+            donated: "NO",
+          },
+          {
+            name: "Siena Francis House",
+            url: "https://www.sienafrancis.org",
+            focus: "Emergency Shelter",
+            mission:
+              "Operates Nebraska's largest emergency shelter and recovery programs for adults in Omaha.",
+            donated: "NO",
+          },
+          {
+            name: "Together",
+            url: "https://www.togetheromaha.org",
+            focus: "Housing & Basic Needs",
+            mission:
+              "Provides rent assistance and housing navigation to prevent and end homelessness in Omaha.",
+            donated: "NO",
+          },
+        ],
+        Nevada: [
+          {
+            name: "Catholic Charities of Southern Nevada",
+            url: "https://www.catholiccharities.com",
+            focus: "Meals & Housing",
+            mission:
+              "Provides meals, shelter, and housing services for people experiencing homelessness in the Las Vegas Valley.",
+            donated: "NO",
+          },
+
+          {
+            name: "HELP of Southern Nevada",
+            url: "https://www.helpsonv.org",
+            focus: "Housing & Services",
+            mission:
+              "Provides shelter, housing, and support services throughout the Las Vegas metropolitan area.",
+            donated: "NO",
+          },
+        ],
+        "New Hampshire": [
+          {
+            name: "Families in Transition",
+            url: "https://www.fitnh.org",
+            focus: "Family Housing",
+            mission:
+              "Provides shelter, housing, and workforce programs for families experiencing homelessness across New Hampshire.",
+            donated: "NO",
+          },
+
+          {
+            name: "Cross Roads House",
+            url: "https://www.crossroadshouse.org",
+            focus: "Emergency Shelter",
+            mission:
+              "Provides shelter and case management for individuals and families in the greater Portsmouth area.",
+            donated: "NO",
+          },
+          {
+            name: "Harbor Homes",
+            url: "https://www.harborhomes.org",
+            focus: "Housing & Healthcare",
+            mission:
+              "Provides housing, healthcare, and support services for people experiencing homelessness in Nashua.",
+            donated: "NO",
+          },
+        ],
+        "New Jersey": [
+          {
+            name: "Eva's Village",
+            url: "https://www.evasvillage.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and addiction recovery programs for people experiencing homelessness in Paterson.",
+            donated: "NO",
+          },
+          {
+            name: "Rescue Mission of Trenton",
+            url: "https://www.rescuemissionoftrenton.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery services for people experiencing homelessness in Trenton.",
+            donated: "NO",
+          },
+          {
+            name: "Bridges Outreach",
+            url: "https://www.bridgesoutreach.org",
+            focus: "Street Outreach",
+            mission:
+              "Delivers meals and supplies directly to unsheltered individuals across northern New Jersey.",
+            donated: "NO",
+          },
+          {
+            name: "Covenant House New Jersey",
+            url: "https://www.covenanthousenj.org",
+            focus: "Youth Homelessness",
+            mission:
+              "Provides shelter and support services for homeless and trafficked youth in Newark.",
+            donated: "NO",
+          },
+        ],
+        "New Mexico": [
+          {
+            name: "Albuquerque Health Care for the Homeless",
+            url: "https://www.abqhch.org",
+            focus: "Healthcare",
+            mission:
+              "Provides medical, dental, and behavioral healthcare to people experiencing homelessness in Albuquerque.",
+            donated: "NO",
+          },
+
+          {
+            name: "Joy Junction",
+            url: "https://www.joyjunction.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for families and individuals experiencing homelessness in Albuquerque.",
+            donated: "NO",
+          },
+        ],
+        "New York": [
+          {
+            name: "Coalition for the Homeless",
+            url: "https://www.coalitionforthehomeless.org",
+            focus: "Advocacy & Services",
+            mission:
+              "Provides advocacy, meals, and housing programs for New Yorkers experiencing homelessness.",
+            donated: "NO",
+          },
+          {
+            name: "The Bowery Mission",
+            url: "https://www.bowery.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs to people experiencing homelessness in New York City since 1879.",
+            donated: "NO",
+          },
+          {
+            name: "Urban Pathways",
+            url: "https://www.urbanpathways.org",
+            focus: "Housing & Case Management",
+            mission:
+              "Provides supportive housing and case management for adults experiencing homelessness in New York City.",
+            donated: "NO",
+          },
+          {
+            name: "Care for the Homeless",
+            url: "https://www.careforthehomeless.org",
+            focus: "Healthcare",
+            mission:
+              "Provides healthcare services to people experiencing homelessness across New York City's shelter system.",
+            donated: "NO",
+          },
+        ],
+        "North Carolina": [
+          {
+            name: "Urban Ministries of Wake County",
+            url: "https://www.urbanmin.org",
+            focus: "Shelter & Meals",
+            mission:
+              "Provides shelter, meals, and a free medical clinic for people experiencing homelessness in Raleigh.",
+            donated: "NO",
+          },
+          {
+            name: "The Salvation Army Center of Hope",
+            url: "https://www.salvationarmycarolinas.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter and rehabilitation services for women, children, and men experiencing homelessness in Charlotte.",
+            donated: "NO",
+          },
+          {
+            name: "Charlotte Rescue Mission",
+            url: "https://www.charlotterescuemission.org",
+            focus: "Recovery & Shelter",
+            mission:
+              "Provides shelter and long-term addiction recovery programs for men and women experiencing homelessness in Charlotte.",
+            donated: "NO",
+          },
+        ],
+        "North Dakota": [
+          {
+            name: "YWCA Cass Clay",
+            url: "https://www.ywcacassclay.org",
+            focus: "Women & Families",
+            mission:
+              "Provides the region's largest shelter for women and children experiencing homelessness and domestic violence in Fargo.",
+            donated: "NO",
+          },
+
+          {
+            name: "Community Action Partnership of North Dakota",
+            url: "https://www.capnd.org",
+            focus: "Housing & Prevention",
+            mission:
+              "Provides housing assistance and homelessness prevention services to families across North Dakota.",
+            donated: "NO",
+          },
+        ],
+        Ohio: [
+          {
+            name: "City Gospel Mission",
+            url: "https://www.citygospelmission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men experiencing homelessness in Cincinnati.",
+            donated: "NO",
+          },
+        ],
+        Oklahoma: [
+          {
+            name: "City Rescue Mission",
+            url: "https://www.cityrescue.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for people experiencing homelessness in Oklahoma City.",
+            donated: "NO",
+          },
+          {
+            name: "Homeless Alliance",
+            url: "https://www.homelessalliance.org",
+            focus: "Coordination & Housing",
+            mission:
+              "Coordinates outreach, day shelter, and housing programs across Oklahoma City.",
+            donated: "NO",
+          },
+          {
+            name: "John 3:16 Mission",
+            url: "https://www.john316mission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Tulsa.",
+            donated: "NO",
+          },
+        ],
+        Oregon: [
+          {
+            name: "Transition Projects",
+            url: "https://www.tprojects.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides shelter and housing placement services for people experiencing homelessness in Portland.",
+            donated: "NO",
+          },
+          {
+            name: "JOIN",
+            url: "https://www.joinpdx.org",
+            focus: "Housing Placement",
+            mission:
+              "Helps unsheltered Portlanders move into and maintain permanent housing.",
+            donated: "NO",
+          },
+          {
+            name: "Union Gospel Mission Portland",
+            url: "https://www.ugmportland.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men and women experiencing homelessness in Portland.",
+            donated: "NO",
+          },
+          {
+            name: "Central City Concern",
+            url: "https://www.centralcityconcern.org",
+            focus: "Housing & Healthcare",
+            mission:
+              "Provides housing, healthcare, and job training for people experiencing homelessness in Portland.",
+            donated: "NO",
+          },
+        ],
+        Pennsylvania: [
+          {
+            name: "Project HOME",
+            url: "https://www.projecthome.org",
+            focus: "Housing & Healthcare",
+            mission:
+              "Provides housing, healthcare, and job training to help Philadelphians exit homelessness permanently.",
+            donated: "NO",
+          },
+          {
+            name: "Bethesda Mission",
+            url: "https://www.bethesdamission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Harrisburg.",
+            donated: "NO",
+          },
+          {
+            name: "Sunday Breakfast Rescue Mission",
+            url: "https://www.sundaybreakfast.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for people experiencing homelessness in Philadelphia.",
+            donated: "NO",
+          },
+          {
+            name: "Face to Face Germantown",
+            url: "https://www.facetofacegermantown.org",
+            focus: "Basic Needs",
+            mission:
+              "Provides meals, medical care, and social services for neighbors experiencing homelessness in Philadelphia.",
+            donated: "NO",
+          },
+        ],
+        "Rhode Island": [
+          {
+            name: "Crossroads Rhode Island",
+            url: "https://www.crossroadsri.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides shelter, housing, and support services for people experiencing homelessness statewide.",
+            donated: "NO",
+          },
+
+          {
+            name: "Community Care Alliance",
+            url: "https://www.communitycareri.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter and recovery-focused support services for people experiencing homelessness in northern Rhode Island.",
+            donated: "NO",
+          },
+        ],
+        "South Carolina": [
+          {
+            name: "Miracle Hill Ministries",
+            url: "https://www.miraclehill.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Greenville.",
+            donated: "NO",
+          },
+
+          {
+            name: "One80 Place",
+            url: "https://www.one80place.org",
+            focus: "Shelter & Services",
+            mission:
+              "Provides shelter, meals, and workforce programs for people experiencing homelessness in Charleston.",
+            donated: "NO",
+          },
+        ],
+        "South Dakota": [
+          {
+            name: "Bishop Dudley Hospitality House",
+            url: "https://www.bdhh.org",
+            focus: "Shelter & Services",
+            mission:
+              "Provides shelter, case management, and access to partner services for people experiencing homelessness in Sioux Falls.",
+            donated: "NO",
+          },
+          {
+            name: "St. Francis House",
+            url: "https://www.stfrancishouse.com",
+            focus: "Shelter & Meals",
+            mission:
+              "Provides shelter and meals to individuals of all backgrounds experiencing homelessness in Sioux Falls.",
+            donated: "NO",
+          },
+
+          {
+            name: "Cornerstone Rescue Mission",
+            url: "https://www.cornerstonemission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for people experiencing homelessness in Rapid City.",
+            donated: "NO",
+          },
+        ],
+        Tennessee: [
+          {
+            name: "Nashville Rescue Mission",
+            url: "https://www.nashvillerescuemission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Nashville.",
+            donated: "NO",
+          },
+          {
+            name: "Room In The Inn",
+            url: "https://www.roomintheinn.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides winter shelter and permanent housing programs for people experiencing homelessness in Nashville.",
+            donated: "NO",
+          },
+
+          {
+            name: "Memphis Union Mission",
+            url: "https://www.memphisunionmission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men experiencing homelessness in Memphis.",
+            donated: "NO",
+          },
+        ],
+        Texas: [
+          {
+            name: "Star of Hope Mission",
+            url: "https://www.sohmission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and families experiencing homelessness in Houston.",
+            donated: "NO",
+          },
+          {
+            name: "Front Steps",
+            url: "https://www.frontsteps.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides shelter and permanent supportive housing for people experiencing homelessness in Austin.",
+            donated: "NO",
+          },
+          {
+            name: "Union Gospel Mission Dallas",
+            url: "https://www.ugmdallas.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for people experiencing homelessness in Dallas.",
+            donated: "NO",
+          },
+          {
+            name: "Haven for Hope",
+            url: "https://www.havenforhope.org",
+            focus: "Comprehensive Services",
+            mission:
+              "Provides a campus of shelter, healthcare, and job services for people experiencing homelessness in San Antonio.",
+            donated: "NO",
+          },
+        ],
+        Utah: [
+          {
+            name: "The Road Home",
+            url: "https://www.theroadhome.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides shelter and housing placement services for people experiencing homelessness in Salt Lake City.",
+            donated: "NO",
+          },
+          {
+            name: "Volunteers of America Utah",
+            url: "https://www.voaut.org",
+            focus: "Youth & Detox Services",
+            mission:
+              "Provides youth shelter, detox, and street outreach services across Salt Lake County.",
+            donated: "NO",
+          },
+          {
+            name: "Catholic Community Services of Utah",
+            url: "https://www.ccsutah.org",
+            focus: "Basic Needs & Housing",
+            mission:
+              "Provides shelter, food, and housing assistance to Utahns experiencing homelessness.",
+            donated: "NO",
+          },
+          {
+            name: "Switchpoint Community Resource Center",
+            url: "https://www.switchpoint.org",
+            focus: "Comprehensive Services",
+            mission:
+              "Provides shelter, job training, and healthcare under one roof for people experiencing homelessness in St. George.",
+            donated: "NO",
+          },
+        ],
+        Vermont: [
+          {
+            name: "Committee on Temporary Shelter (COTS)",
+            url: "https://www.cotsonline.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides shelter, meals, and housing programs for people experiencing homelessness in Burlington.",
+            donated: "NO",
+          },
+          {
+            name: "Spectrum Youth & Family Services",
+            url: "https://www.spectrumvt.org",
+            focus: "Youth Homelessness",
+            mission:
+              "Provides shelter and support services for homeless and at-risk youth in the Burlington area.",
+            donated: "NO",
+          },
+          {
+            name: "Good Samaritan Haven",
+            url: "https://www.goodsamaritanhaven.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter and case management for people experiencing homelessness in central Vermont.",
+            donated: "NO",
+          },
+        ],
+        Virginia: [
+          {
+            name: "Homeward",
+            url: "https://www.homewardva.org",
+            focus: "Coordination",
+            mission:
+              "Coordinates data, planning, and provider collaboration to reduce homelessness in the Richmond region.",
+            donated: "NO",
+          },
+
+          {
+            name: "Carpenter's Shelter",
+            url: "https://www.carpentersshelter.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides shelter and rapid rehousing services for individuals and families in Alexandria.",
+            donated: "NO",
+          },
+        ],
+        Washington: [
+          {
+            name: "Union Gospel Mission Seattle",
+            url: "https://www.ugm.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Seattle.",
+            donated: "NO",
+          },
+          {
+            name: "Downtown Emergency Service Center (DESC)",
+            url: "https://www.desc.org",
+            focus: "Housing & Healthcare",
+            mission:
+              "Provides shelter, permanent housing, and behavioral healthcare for chronically homeless adults in Seattle.",
+            donated: "NO",
+          },
+          {
+            name: "Mary's Place",
+            url: "https://www.marysplaceseattle.org",
+            focus: "Family Shelter",
+            mission:
+              "Provides emergency shelter for homeless women, children, and families in the Seattle area.",
+            donated: "NO",
+          },
+          {
+            name: "Compass Housing Alliance",
+            url: "https://www.compasshousingalliance.org",
+            focus: "Housing & Shelter",
+            mission:
+              "Provides shelter and affordable housing programs for people experiencing homelessness in Seattle.",
+            donated: "NO",
+          },
+        ],
+        "West Virginia": [
+          {
+            name: "Union Mission Ministries",
+            url: "https://www.unionmission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for men, women, and children experiencing homelessness in Charleston.",
+            donated: "NO",
+          },
+          {
+            name: "Huntington City Mission",
+            url: "https://www.huntingtoncitymission.org",
+            focus: "Shelter & Recovery",
+            mission:
+              "Provides shelter, meals, and recovery programs for people experiencing homelessness in Huntington.",
+            donated: "NO",
+          },
+        ],
+        Wisconsin: [
+          {
+            name: "Porchlight",
+            url: "https://www.porchlightinc.org",
+            focus: "Shelter & Housing",
+            mission:
+              "Provides shelter and supportive housing programs for people experiencing homelessness in Madison.",
+            donated: "NO",
+          },
+        ],
+        Wyoming: [
+          {
+            name: "Climb Wyoming",
+            url: "https://www.climbwyoming.org",
+            focus: "Job Training",
+            mission:
+              "Helps low-income single mothers build job skills and stability to move out of poverty and housing insecurity.",
+            donated: "NO",
+          },
+          {
+            name: "Volunteers of America Northern Rockies",
+            url: "https://www.voa.org",
+            focus: "Housing & Veteran Services",
+            mission:
+              "Provides housing assistance and veteran support services for people experiencing homelessness in Wyoming.",
+            donated: "NO",
+          },
+        ],
+      };
+
+      /* ---------- Build dropdown ---------- */
+      const select = document.getElementById("stateSelect");
+      const states = Object.keys(DATA);
+      states.forEach((st) => {
+        const opt = document.createElement("option");
+        opt.value = st;
+        opt.textContent = st;
+        select.appendChild(opt);
+      });
+      document.getElementById("stateCount").textContent =
+        states.length + " states available";
+
+      const emptyState = document.getElementById("emptyState");
+      const resultsWrap = document.getElementById("resultsWrap");
+      const stateNameEl = document.getElementById("stateName");
+      const tbody = document.getElementById("tableBody");
+
+      function renderState(stateName) {
+        const orgs = DATA[stateName];
+        if (!orgs) {
+          emptyState.style.display = "block";
+          resultsWrap.style.display = "none";
+          return;
+        }
+        stateNameEl.textContent = stateName;
+        tbody.innerHTML = orgs
+          .map((org) => {
+            const isYes = String(org.donated).trim().toUpperCase() === "YES";
+            const badgeClass = "donated-badge" + (isYes ? " is-yes" : "");
+            return `
+    <tr>
+      <td class="name-cell">
+        <span class="cell-label">Name</span>
+        <a class="org-link" href="${org.url}" target="_blank" rel="noopener noreferrer">${org.name}</a>
+      </td>
+      <td class="focus-cell">
+        <span class="cell-label">Focus Area</span>
+        <span class="focus-pill">${org.focus}</span>
+      </td>
+      <td class="mission-cell">
+        <span class="cell-label">Mission Statement</span>
+        <span>${org.mission}</span>
+      </td>
+      <td class="donated-cell">
+        <span class="cell-label">Donated</span>
+        <span class="${badgeClass}">${org.donated}</span>
+      </td>
+    </tr>
+  `;
+          })
+          .join("");
+        emptyState.style.display = "none";
+        resultsWrap.style.display = "block";
+      }
+
+      select.addEventListener("change", (e) => {
+        const val = e.target.value;
+        if (val) {
+          renderState(val);
+        } else {
+          emptyState.style.display = "block";
+          resultsWrap.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
